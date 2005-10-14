@@ -1,0 +1,11 @@
+MANIFEST
+Changes
+Makefile.PL
+README
+lib/Log/Trivial.pm
+t/00-use.t
+t/01-basic.t
+t/02-write.t
+t/90-pod.t
+t/91-pod.t
+META.yml

@@ -1,0 +1,6 @@
+$Id: Changes,v 1.1.1.1 2005/10/14 15:31:05 adam Exp $
+
+Revision history for Perl extension Log::Trivial
+
+0.01	14 October 2005
+	-	Very basic OO file logging tool
