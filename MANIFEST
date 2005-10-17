@@ -8,4 +8,5 @@ t/01-basic.t
 t/02-write.t
 t/90-pod.t
 t/91-pod.t
+t/92-pod.t
 META.yml

@@ -1,8 +1,8 @@
-#	$Id: 02-write.t,v 1.1.1.1 2005/10/14 15:31:05 adam Exp $
+#	$Id: 02-write.t,v 1.2 2005/10/15 20:10:54 adam Exp $
 
 use strict;
 use Test;
-BEGIN { plan tests => 19 }
+BEGIN { plan tests => 20 }
 
 use Log::Trivial;
 
@@ -24,20 +24,21 @@ ok($logger->{_level}, 3);							# Check the default level 3
 ok($logger->set_log_level(2));						# Set the logging level to 2
 ok($logger->{_level}, 2);							# Check it's set
 
-#	10-13
+#	10-14
 ok(! -e $logfile);										# There should be no file there now
 ok(! $logger->write(comment => "Test", level => 3));	# Write Test to the log, shouldn't be written
 ok($logger->write(comment => "Test-m", level => 1));	# Write Test to the log, should be written
+ok($logger->write("Test-2-m"));							# Write without a level
 ok(-e $logfile);										# Now there should be a file
 
-#	14-15
+#	15-16
 ok($logger->set_log_mode("s"));							# Set to single/fast mode
 ok($logger->{_mode}, 0);
 
-#	16-17
+#	17-18
 ok(! $logger->write(comment => "Test", level => 3));	# Write Test to the log, shouldn't be written
 ok($logger->write(comment => "Test-s", level => 1));	# Write Test to the log, should be written
 
-#	18-19
+#	19-20
 ok(unlink $logfile); 
 ok(! -e $logfile);

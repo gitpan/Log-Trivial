@@ -1,7 +1,7 @@
-#       $Id: META.yml,v 1.2 2005/10/14 21:02:24 adam Exp $
+#       $Id: META.yml,v 1.4 2005/10/15 20:10:44 adam Exp $
 
 name:         Log-Trivial
-version:      0.01
+version:      0.02
 license: gpl
 version_from: lib/Log/Trivial.pm
 installdirs:  site
@@ -17,4 +17,4 @@ generated_by: ExtUtils::MakeMaker version 6.17
 provides:
   Log::Trivial:
     file: lib/Log/Trivial.pm
-    version: 0.01
+    version: 0.02

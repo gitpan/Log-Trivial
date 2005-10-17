@@ -1,4 +1,4 @@
-#	$Id: Trivial.pm,v 1.2 2005/10/14 21:02:40 adam Exp $
+#	$Id: Trivial.pm,v 1.4 2005/10/15 20:10:51 adam Exp $
 
 =head1 NAME
 
@@ -9,7 +9,7 @@ Log::Trivial - Very simple tool for writing very simple log files
   use Log::Trivial;
   my $logger = Log::Trivial->new(log_file => "path/to/my/file.log");
   $logger->set_level(3);
-  $logger->log("foo");
+  $logger->log(comment => "foo");
 
 =head1 DESCRIPTION
 
@@ -26,7 +26,7 @@ use warnings;
 use Fcntl qw(:DEFAULT :flock :seek);
 use Carp;
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 #
 #	NEW
@@ -47,9 +47,6 @@ or
     log_file => "/my/config/file",
     log_level=> "2");
 
-If you set a file in the constructor that is invalid for any reason
-it will die.
-
 =cut
 
 sub new {
@@ -60,6 +57,8 @@ sub new {
 		_mode	=>  1,										# Set the file logging mode 1=multi thred, 0=single
 		_handle =>  undef,									# File Handle if in single mode
 		_level  =>  $args{log_level} || "3",				# Logging level
+		_error_message => "",								# Store error messages here
+		_debug  =>  undef,									# debug flag
 	}, ref($class) || $class;
 
 	return $object;
@@ -151,6 +150,10 @@ Write a log file entry.
     comment => "My comment to be logged",
     level   => 3);
 
+or
+
+  $logger->write("My comment to be logged");
+
 It will fail if the log file hasn't be defined, or isn't
 writeable. It will return the string written on sucess.
 
@@ -166,17 +169,23 @@ return added automatically.
 
 sub write {
 	my $self = shift;
-	my %args = @_;
+	my $message;
+	if (@_ > 1) {
+		my %args = @_;
+		my $level = $args{level} || $self->{_level};
+		return undef if $self->{_level} < $level;
+		$message = $args{comment} || "."
+    } else {
+		$message = shift;
+		return undef unless $message;
+    }
+    
+	$message =  localtime() . "\t" . $message;
 	my $file = $self->{_file};
+	return $self->_raise_error("No Log file specified yet") unless $file;
 
-    my $level   = $args{level}   || $self->{_level};
-
-    return undef if $self->{_level} < $level;
-
-    my $message = localtime() . "\t" . $args{comment} || ".";
-
-    if (-e $file) {
-		return $self->_raise_error("ERROR: Insufficient permissions to write to: $file") unless (-w $file);
+	if (-e $file && ! -w $file) {
+		return $self->_raise_error("Insufficient permissions to write to: $file");
 	}
 
 	if ($self->{_mode}) {
@@ -194,6 +203,23 @@ sub write {
 	}
  	return $message;
 }
+
+=head2 get_error
+
+In normal operation the module should never die. All errors are
+non-fatal. If an error occurs it can a method will return undef
+and the error can be read with the get_error method. Only the most
+recent error is stored.
+
+  $logger->write("Log this") || print $logger->get_error;
+
+=cut
+
+sub get_error {
+	my $self = shift;
+	return $self->{_error_message};
+}
+
 
 
 #
@@ -221,8 +247,10 @@ sub _write_log {
 	my $handle = shift;
 	my $string = shift() . "\n";
 
+	my $bytes  = length $string;
 	sysseek $handle, 0, SEEK_END;
-	syswrite $handle, $string, length($string);
+	syswrite $handle, $string, $bytes;
+	return $self->_raise_error("Write Error") unless $bytes == length $string;
 }
 
 sub _raise_error {
@@ -240,14 +268,15 @@ __END__
 
 =head1 LOG FORMAT
 
-The log file format is very simple:
+The log file format is very simple and fixed:
 
 Time & date [tab] Your log comment [carriage return new line]
 
 =head2 Prerequisites
 
 At the moment the module only uses core modules. The test suite optionally uses
-C<POD::Coverage> and C<Test::Pod>, which will be skipped if you don't have them.
+C<Pod::Coverage>, C<Test::Pod::Coverage> and C<Test::Pod>, which will be skipped
+if you don't have them.
 
 =head2 History
 
@@ -281,7 +310,7 @@ L<perl>, L<Log::Agent>, L<Log::Log4perl>, L<Log::Dispatch>, L<Log::Simple>
 
 =head1 COPYRIGHT
 
-This version as C<Config::Trivial>, Copyright iredale consulting 2005
+This version as C<Log::Trivial>, Copyright iredale consulting 2005
 
 OSI Certified Open Source Software.
 
