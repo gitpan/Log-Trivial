@@ -1,11 +1,13 @@
 MANIFEST
 Changes
 Makefile.PL
+Build.PL
 README
 lib/Log/Trivial.pm
 t/00-use.t
 t/01-basic.t
 t/02-write.t
+t/03-error.t
 t/90-pod.t
 t/91-pod.t
 t/92-pod.t

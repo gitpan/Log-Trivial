@@ -1,4 +1,4 @@
-#	$Id: Trivial.pm,v 1.4 2005/10/15 20:10:51 adam Exp $
+#	$Id: Trivial.pm,v 1.7 2005/10/20 19:44:03 adam Exp $
 
 =head1 NAME
 
@@ -26,7 +26,7 @@ use warnings;
 use Fcntl qw(:DEFAULT :flock :seek);
 use Carp;
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 
 #
 #	NEW
@@ -54,7 +54,7 @@ sub new {
 	my %args  = @_;
 	my $object = bless {
 		_file	=>	$args{log_file}  || "",					# The Log File
-		_mode	=>  1,										# Set the file logging mode 1=multi thred, 0=single
+		_mode	=>  1,										# Set the file logging mode 1=multi thread, 0=single
 		_handle =>  undef,									# File Handle if in single mode
 		_level  =>  $args{log_level} || "3",				# Logging level
 		_error_message => "",								# Store error messages here
@@ -95,8 +95,10 @@ This may be slower but allows multiple applications to write to the log
 file at the same time. The alternative mode is called single mode:
 once you start to write to the log no other application honouring
 flock will write to the log. Single mode is potentially faster, and
-may be appropiate if you know that only one copy of your application
-can should be writing to the log at any given point in time
+may be appropriate if you know that only one copy of your application
+can should be writing to the log at any given point in time.
+
+WARNING: Not all system honour flock.
 
   $logger->set_log_mode("multi");	# Sets multi mode (the default)
 
@@ -122,11 +124,11 @@ sub set_log_mode {
 
 =head2 set_log_level
 
-Log::Trivial uses very simple aribtatary logging level logic. Level 0
+Log::Trivial uses very simple arbitrary logging level logic. Level 0
 is the highest priority log level, the lowest is the largest number
 possible in Perl on your platform. You set the global log level for
 your application using this function, and only log events of this
-level or higher priority will be logged.
+level or higher priority will be logged. The default level is 3.
 
   $logger->set_log_level(4);
 
@@ -155,14 +157,14 @@ or
   $logger->write("My comment to be logged");
 
 It will fail if the log file hasn't be defined, or isn't
-writeable. It will return the string written on sucess.
+writable. It will return the string written on success.
 
 If you don't specify a log level, it will default to the current
 log level and therefore log the event. Therefore if you always
 wish to log something either specify a level of 0 or never
 specify a log level.
 
-Log file enteries are time stamped and have a newline carriage
+Log file entries are time stamped and have a newline carriage
 return added automatically.
 
 =cut
@@ -177,7 +179,7 @@ sub write {
 		$message = $args{comment} || "."
     } else {
 		$message = shift;
-		return undef unless $message;
+		return $self->_raise_error("Nothing message sent to log") unless $message;
     }
     
 	$message =  localtime() . "\t" . $message;
@@ -207,9 +209,9 @@ sub write {
 =head2 get_error
 
 In normal operation the module should never die. All errors are
-non-fatal. If an error occurs it can a method will return undef
-and the error can be read with the get_error method. Only the most
-recent error is stored.
+non-fatal. If an error occurs it will be stored internally within
+the object and the method will return undef. The error can be read
+with the get_error method. Only the most recent error is stored.
 
   $logger->write("Log this") || print $logger->get_error;
 
@@ -310,7 +312,7 @@ L<perl>, L<Log::Agent>, L<Log::Log4perl>, L<Log::Dispatch>, L<Log::Simple>
 
 =head1 COPYRIGHT
 
-This version as C<Log::Trivial>, Copyright iredale consulting 2005
+C<Log::Trivial>, Copyright iredale consulting 2005
 
 OSI Certified Open Source Software.
 

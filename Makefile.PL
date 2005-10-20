@@ -1,11 +1,11 @@
-# $Id: Makefile.PL,v 1.2 2005/10/14 21:02:24 adam Exp $
+# $Id: Makefile.PL,v 1.4 2005/10/19 20:40:54 adam Exp $
 
 use ExtUtils::MakeMaker;
 use strict;
 use 5.006;
 
 my @tests;
-my $test_list = 't/00-use.t t/01-basic.t t/02-write.t';
+my $test_list = 't/00-use.t t/01-basic.t t/02-write.t t/03-error.t';
 
 eval { require Test::Pod; };
 $test_list .= ' t/90-pod.t' unless ($@);
@@ -22,6 +22,7 @@ WriteMakefile(
     'NAME'          => 'Log::Trivial',
     'VERSION_FROM'  => 'lib/Log/Trivial.pm',
     'PREREQ_PM'     => {}, 
+	'PL_FILES'      => {},
 	@tests,
      dist           => {
        COMPRESS      => 'gzip -9f',

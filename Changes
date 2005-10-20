@@ -1,6 +1,10 @@
-$Id: Changes,v 1.4 2005/10/17 19:07:52 adam Exp $
+$Id: Changes,v 1.7 2005/10/20 19:43:51 adam Exp $
 
 Revision history for Perl extension Log::Trivial
+
+0.03	20 October 2005
+	-	Supports Module::Build as well as make
+	-	Extra tests
 
 0.02	17 October 2005
 	-	Added t/92-pod.t
