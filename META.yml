@@ -1,20 +1,14 @@
-#       $Id: META.yml,v 1.7 2005/10/20 19:43:51 adam Exp $
-
-name:         Log-Trivial
-version:      0.03
+---
+name: Log-Trivial
+version: 0.10
+author:
+  - 'Adam Trickett, E<lt>atrickett@cpan.orgE<gt>'
+abstract: Very simple tool for writing very simple log files
 license: gpl
-version_from: lib/Log/Trivial.pm
-installdirs:  site
 requires:
   perl: 5.6.1
-build_requires:
-  Test: 0
-conflicts: {}
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.17
-
 provides:
   Log::Trivial:
     file: lib/Log/Trivial.pm
-    version: 0.03
+    version: 0.10
+generated_by: Module::Build version 0.26

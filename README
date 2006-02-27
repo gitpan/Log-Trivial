@@ -1,6 +1,6 @@
-$Id: README,v 1.5 2005/10/20 19:43:51 adam Exp $
+$Id: README,v 1.7 2006-02-27 20:49:39 adam Exp $
 
-Log::Trivial Version 0.04
+Log::Trivial Version 0.10
 =========================
 
 This is "Yet Another" simple module to write trivial
@@ -10,6 +10,11 @@ ALPHA grade only.
 There are LOTS of other log writing modules on CPAN,
 please check them all carefully before installing
 this one.
+
+WARNING: This module needs a POSIX like operating
+system for full function, which means it probably
+will not run on Windows, though it has been
+tested on Cygwin/Win2K.
 
 INSTALLATION
 

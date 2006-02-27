@@ -1,6 +1,12 @@
-$Id: Changes,v 1.7 2005/10/20 19:43:51 adam Exp $
+$Id: Changes,v 1.9 2006-02-27 20:49:39 adam Exp $
 
 Revision history for Perl extension Log::Trivial
+
+0.10    27 February 2006
+	-   Washed code through perltidy using PBP settings
+    -   Now using PBP guidelines
+    -   Improved test coverage
+    -   May work on non POSIX platforms
 
 0.03	20 October 2005
 	-	Supports Module::Build as well as make

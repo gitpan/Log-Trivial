@@ -8,6 +8,7 @@ t/00-use.t
 t/01-basic.t
 t/02-write.t
 t/03-error.t
+t/04-posix-write.t
 t/90-pod.t
 t/91-pod.t
 t/92-pod.t

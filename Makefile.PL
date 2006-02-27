@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.4 2005/10/19 20:40:54 adam Exp $
+# $Id: Makefile.PL,v 1.5 2006-02-27 20:49:39 adam Exp $
 
 use ExtUtils::MakeMaker;
 use strict;
@@ -6,6 +6,8 @@ use 5.006;
 
 my @tests;
 my $test_list = 't/00-use.t t/01-basic.t t/02-write.t t/03-error.t';
+
+$test_list .= ' t/04-posix-write.t' unless $^O =~ /mswin/;
 
 eval { require Test::Pod; };
 $test_list .= ' t/90-pod.t' unless ($@);

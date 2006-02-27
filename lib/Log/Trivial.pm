@@ -1,4 +1,188 @@
-#	$Id: Trivial.pm,v 1.7 2005/10/20 19:44:03 adam Exp $
+#	$Id: Trivial.pm,v 1.10 2006-02-27 20:49:46 adam Exp $
+
+package Log::Trivial;
+
+use 5.006;
+use strict;
+use warnings;
+use Fcntl qw(:DEFAULT :flock :seek);
+use Carp;
+
+our $VERSION = '0.10';
+
+#
+#	NEW
+#
+
+sub new {
+    my $class  = shift;
+    my %args   = @_;
+    my $object = bless {
+        _file   => $args{log_file} || q{},          # The Log File
+        _mode   => 1,                               # Set the file logging mode 1=multi thread, 0=single
+        _handle => undef,                           # File Handle if in single mode
+        _level         => $args{log_level} || '3',  # Logging level
+        _error_message => q{},                      # Store error messages here
+        _debug         => undef,                    # debug flag
+        _o_sync        => 1,                        # Use POSIX O_SYNC for writing, 1=on (default), 0=off
+        },
+        ref $class || $class;
+
+    return $object;
+}
+
+sub set_log_file {
+    my $self     = shift;
+    my $log_file = shift;
+    if ( $self->_check_file($log_file) ) {
+        $self->{_file} = $log_file;
+        $self->{_self} = 0;
+        return $self;
+    }
+    else {
+        return;
+    }
+}
+
+sub set_log_mode {
+    my $self = shift;
+    my $mode = shift;
+
+    if ( $mode =~ /m/imx ) {
+        $self->{_mode} = 1;
+    }
+    else {
+        $self->{_mode} = 0;
+    }
+
+    return $self;
+}
+
+sub set_log_level {
+    my $self  = shift;
+    my $level = shift;
+
+    $self->{_level} = $level if defined $level;
+
+    return $self;
+}
+
+sub set_write_mode {
+    my $self = shift;
+    my $mode = shift;
+    
+   if ( $mode =~ /s/imx ) {
+        $self->{_o_sync} = 1;
+    }
+    else {
+        $self->{_o_sync} = 0;
+    }
+    return $self;
+}
+
+sub write {
+    my $self = shift;
+    my $message;
+    if ( @_ > 1 ) {
+        my %args = @_;
+        my $level = $args{level};
+        return if $level && $self->{_level} < $level;
+        $message = $args{comment} || q{.};
+    }
+    else {
+        $message = shift;
+    }
+
+    return $self->_raise_error('Nothing message sent to log')
+        unless $message;
+
+    $message = localtime() . "\t" . $message;
+    my $file = $self->{_file};
+    return $self->_raise_error('No Log file specified yet') unless $file;
+
+    if ( -e $file && ! -w _ ) {
+        return $self->_raise_error(
+            "Insufficient permissions to write to: $file");
+    }
+
+    if ( $self->{_mode} ) {
+        my $log = $self->_open_log_file($file);
+
+        $self->_write_log( $log, $message );
+        close $log;
+    }
+    else {
+        my $log;
+        if ( !$self->{_handle} ) {
+            $log = $self->_open_log_file($file);
+            $self->{_handle} = $log;
+        }
+        $self->_write_log( $log, $message );
+    }
+    return $message;
+}
+
+sub get_error {
+    my $self = shift;
+    return $self->{_error_message};
+}
+
+#
+#	Private Stuff
+#
+
+sub _check_file {
+    my $self = shift;
+    my $file = shift;
+    return $self->_raise_error('File error: No file name supplied')
+        unless $file;
+    return $self;
+}
+
+sub _open_log_file {
+    my $self = shift;
+    my $file = shift;
+    my $log;
+
+    if ( $self->{_o_sync} ) {
+        sysopen $log, $file, O_WRONLY | O_CREAT | O_SYNC | O_APPEND
+            or return $self->_raise_error("Unable to open Log File: $file");
+    }
+    else {
+        sysopen $log, $file, O_WRONLY | O_CREAT | O_APPEND
+            or return $self->_raise_error("Unable to open Log File: $file");   
+    }
+    flock $log, LOCK_EX;
+    return $log;
+
+}
+
+sub _write_log {
+    my $self   = shift;
+    my $handle = shift;
+    my $string = shift() . "\n";
+
+    my $bytes = length $string;
+    sysseek $handle, 0, SEEK_END;
+    syswrite $handle, $string, $bytes;
+    return $self->_raise_error('Write Error') unless $bytes == length $string;
+    return $bytes;
+}
+
+sub _raise_error {
+    my $self    = shift;
+    my $message = shift;
+    carp $message if $self->{_debug};       # DEBUG:  warn with the message
+    $self->{_error_message} = $message;     # NORMAL: set the message
+    return;
+}
+
+
+1;
+
+
+__END__
+
 
 =head1 NAME
 
@@ -16,22 +200,6 @@ Log::Trivial - Very simple tool for writing very simple log files
 Use this module when you want use "Yet Another" very simple, light
 weight log file writer.
 
-=cut
-
-package Log::Trivial;
-
-use 5.006;
-use strict;
-use warnings;
-use Fcntl qw(:DEFAULT :flock :seek);
-use Carp;
-
-our $VERSION = "0.03";
-
-#
-#	NEW
-#
-
 =head1 METHODS
 
 =head2 new
@@ -47,45 +215,12 @@ or
     log_file => "/my/config/file",
     log_level=> "2");
 
-=cut
-
-sub new {
-	my $class = shift;
-	my %args  = @_;
-	my $object = bless {
-		_file	=>	$args{log_file}  || "",					# The Log File
-		_mode	=>  1,										# Set the file logging mode 1=multi thread, 0=single
-		_handle =>  undef,									# File Handle if in single mode
-		_level  =>  $args{log_level} || "3",				# Logging level
-		_error_message => "",								# Store error messages here
-		_debug  =>  undef,									# debug flag
-	}, ref($class) || $class;
-
-	return $object;
-}
-
-
 =head2 set_log_file
 
 The log file can be set after the constructor has been called.
 Simply set the path to the file you want to use as the log file.
 
   $logger->set_log_file("/path/to/log.file");
-
-=cut
-
-sub set_log_file {
-	my $self = shift;
-	my $log_file = shift;
-	if ($self->_check_file($log_file)) {
-		$self->{_file} = $log_file;
-		$self->{_self} = 0;
-		return $self;
-	} else {
-		return undef;
-	}
-}
-
 
 =head2 set_log_mode
 
@@ -106,22 +241,6 @@ or
 
   $logger->set_log_mode("single");	# Sets single mode
 
-=cut
-
-sub set_log_mode {
-	my $self = shift;
-	my $mode = shift;
-
-	if ($mode =~ /m/i) {
-		$self->{_mode} = 1;
-	} else {
-		$self->{_mode} = 0;
-	}
-
-	return $self;
-}
-
-
 =head2 set_log_level
 
 Log::Trivial uses very simple arbitrary logging level logic. Level 0
@@ -132,17 +251,16 @@ level or higher priority will be logged. The default level is 3.
 
   $logger->set_log_level(4);
 
-=cut
+=head2 set_write_mode
 
-sub set_log_level {
-	my $self = shift;
-	my $level= shift;
+Log::Trivial write log enteries using the POSIX synchronous mode
+by default. This mode ensures that the data has actually been
+written to the disk. This feature is not supported in all
+operating systems and will slow down the disk write. By default
+this mode is enabled, in future it may be disabled by default.
 
-	$self->{_level} = $level if defined $level;
-
-	return $self;
-}
-
+  $logger->set_write_mode('s');     # sets synchronous (default)
+  $logger->set_write_mode('a');     # sets asynchronous
 
 =head2 write
 
@@ -167,45 +285,6 @@ specify a log level.
 Log file entries are time stamped and have a newline carriage
 return added automatically.
 
-=cut
-
-sub write {
-	my $self = shift;
-	my $message;
-	if (@_ > 1) {
-		my %args = @_;
-		my $level = $args{level} || $self->{_level};
-		return undef if $self->{_level} < $level;
-		$message = $args{comment} || "."
-    } else {
-		$message = shift;
-		return $self->_raise_error("Nothing message sent to log") unless $message;
-    }
-    
-	$message =  localtime() . "\t" . $message;
-	my $file = $self->{_file};
-	return $self->_raise_error("No Log file specified yet") unless $file;
-
-	if (-e $file && ! -w $file) {
-		return $self->_raise_error("Insufficient permissions to write to: $file");
-	}
-
-	if ($self->{_mode}) {
-		my $log = $self->_open_log_file($file);
-
-		$self->_write_log($log, $message);
-		close $log;
-	} else {
-		my $log;
-		if (! $self->{_handle}) {
-			$log = $self->_open_log_file($file);
-			$self->{_handle} = $log;
-		}
-		$self->_write_log($log, $message);
-	}
- 	return $message;
-}
-
 =head2 get_error
 
 In normal operation the module should never die. All errors are
@@ -214,59 +293,6 @@ the object and the method will return undef. The error can be read
 with the get_error method. Only the most recent error is stored.
 
   $logger->write("Log this") || print $logger->get_error;
-
-=cut
-
-sub get_error {
-	my $self = shift;
-	return $self->{_error_message};
-}
-
-
-
-#
-#	Private Stuff
-#
-
-sub _check_file {
-	my $self = shift;
-	my $file = shift;
-	return $self->_raise_error("File error: No file name supplied") unless $file;
-	return $self;
-}
-
-sub _open_log_file {
-	my $self = shift;
-	my $file = shift;
-	sysopen my $log, $file, O_WRONLY | O_CREAT | O_SYNC | O_APPEND
-		or return $self->_raise_error("Unable to open Log File: $file");
-	flock $log, LOCK_EX;
-	return $log;
-}
-
-sub _write_log {
-	my $self   = shift;
-	my $handle = shift;
-	my $string = shift() . "\n";
-
-	my $bytes  = length $string;
-	sysseek $handle, 0, SEEK_END;
-	syswrite $handle, $string, $bytes;
-	return $self->_raise_error("Write Error") unless $bytes == length $string;
-}
-
-sub _raise_error {
-	my $self    = shift;
-	my $message = shift;
-	carp $message if $self->{_debug};			# DEBUG:  warn with the message
-	$self->{_error_message} = $message;			# NORMAL: set the message
-	return undef;
-}
-
-
-1;
-
-__END__
 
 =head1 LOG FORMAT
 
@@ -286,6 +312,11 @@ See Changes file.
 
 =head2 Defects and Limitations
 
+By default log write are POSIX synchronous, it is very unlikely that it will run
+on any OS that does not support POSIX synchronous file writing, this means it
+probably won't run on a VAX, Windows or other antique system. It does run under
+Windows/Cygwin. To use non-POSIX systems you need to turn off synchronous write.
+
 Patches Welcome... ;-)
 
 =head2 To Do
@@ -295,6 +326,10 @@ Patches Welcome... ;-)
 =item *
 
 Much better test suite.
+
+=item *
+
+See if it's possible to work on non-POSIX like systems
 
 =back
 
@@ -312,7 +347,7 @@ L<perl>, L<Log::Agent>, L<Log::Log4perl>, L<Log::Dispatch>, L<Log::Simple>
 
 =head1 COPYRIGHT
 
-C<Log::Trivial>, Copyright iredale consulting 2005
+C<Log::Trivial>, Copyright iredale consulting 2006
 
 OSI Certified Open Source Software.
 
@@ -329,6 +364,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-MA  02111, USA.
+MA 02111, USA.
 
 =cut

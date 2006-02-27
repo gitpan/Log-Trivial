@@ -1,8 +1,8 @@
-#	$Id: 03-error.t,v 1.2 2005/10/20 19:44:15 adam Exp $
+#	$Id: 03-error.t,v 1.3 2006-02-27 20:49:46 adam Exp $
 
 use strict;
 use Test;
-BEGIN { plan tests => 7 };
+BEGIN { plan tests => 9 };
 use Log::Trivial;
 
 my $logger = Log::Trivial->new();
@@ -16,3 +16,7 @@ ok($logger->get_error(), "Nothing message sent to log");
 
 ok(! $logger->set_log_file());
 ok($logger->get_error(), "File error: No file name supplied");
+
+ok($logger->set_log_level());
+ok($logger->{_level}, 3);
+
