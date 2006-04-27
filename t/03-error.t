@@ -1,8 +1,8 @@
-#	$Id: 03-error.t,v 1.3 2006-02-27 20:49:46 adam Exp $
+#	$Id: 03-error.t,v 1.4 2006-04-27 10:31:14 adam Exp $
 
 use strict;
 use Test;
-BEGIN { plan tests => 9 };
+BEGIN { plan tests => 12 };
 use Log::Trivial;
 
 my $logger = Log::Trivial->new();
@@ -20,3 +20,9 @@ ok($logger->get_error(), "File error: No file name supplied");
 ok($logger->set_log_level());
 ok($logger->{_level}, 3);
 
+ok($logger->{_debug} = 1);
+
+print STDERR "\nError message to console expected...\n";
+
+ok(! $logger->set_log_file());
+ok($logger->get_error(), "File error: No file name supplied");

@@ -1,8 +1,8 @@
-#	$Id: 02-write.t,v 1.3 2006-02-27 20:49:46 adam Exp $
+#	$Id: 02-write.t,v 1.4 2006-04-27 10:31:14 adam Exp $
 
 use strict;
 use Test;
-BEGIN { plan tests => 27 }
+BEGIN { plan tests => 40 }
 
 use Log::Trivial;
 
@@ -43,17 +43,78 @@ ok(-e $logfile);										# Now there should be a file
 ok($logger->set_log_mode("s"));							# Set to single/fast mode
 ok($logger->{_mode}, 0);
 
-#	20-21
+#	21-23
 ok(! $logger->write(comment => "Test", level => 3));	# Write Test to the log, shouldn't be written
 ok($logger->write(comment => "Test-s", level => 1));	# Write Test to the log, should be written
+ok($logger->write(comment => "Test-s2", level => 1));	# Write Test to the log, should be written
 
-#   22-23
+#   24-25
 $logger = Log::Trivial->new(log_file => $logfile);
 ok($logger->{_file}, $logfile);
 
 $logger = Log::Trivial->new(log_level => 5);
 ok($logger->{_level}, 5);
 
-#	24-25
+#   25-36
+$logger = Log::Trivial->new(
+    log_tag  => 'test_tag',
+    log_file => $logfile);
+ok ($logger);
+ok ($logger->write('tagged entry'));
+
+if (-e $logfile) {
+    open my $test_log, "<", $logfile || die "Unable to read test log file: $logfile";
+    ok ($test_log);
+
+    my $line = <$test_log>;
+# print STDERR $line;
+    ok($line =~ /Test/);
+
+    $line = <$test_log>;
+# print STDERR $line;
+    ok($line =~ /Test/);
+
+    $line = <$test_log>;
+# print STDERR $line;
+    ok($line =~ /Test-m/);
+
+    $line = <$test_log>;
+# print STDERR $line;
+    ok($line =~ /./);
+
+    $line = <$test_log>;
+# print STDERR $line;
+    ok($line =~ /Test-2-m/);
+
+    $line = <$test_log>;
+# print STDERR $line;
+    ok($line =~ /Test-s/);
+# print STDERR $line;
+    $line = <$test_log>;
+
+    ok($line =~ /Test-s2/);
+
+    $line = <$test_log>;
+# print STDERR $line;
+    ok($line =~ /test_tag/);
+    ok($line =~ /tagged entry/);
+
+    close $test_log;
+}
+else {
+    skip("Log file does not exist, skipping this test...");
+    skip("Log file does not exist, skipping this test...");
+    skip("Log file does not exist, skipping this test...");
+    skip("Log file does not exist, skipping this test...");
+    skip("Log file does not exist, skipping this test...");
+    skip("Log file does not exist, skipping this test...");
+    skip("Log file does not exist, skipping this test...");
+    skip("Log file does not exist, skipping this test...");
+    skip("Log file does not exist, skipping this test...");
+    skip("Log file does not exist, skipping this test...");
+}
+
+
+#	37-38
 ok(unlink $logfile); 
 ok(! -e $logfile);

@@ -1,10 +1,10 @@
-#	$Id: Build.PL,v 1.5 2006-02-27 20:49:39 adam Exp $;
+#	$Id: Build.PL,v 1.6 2006-04-27 10:30:44 adam Exp $;
 
 use Module::Build;
 
 my @tests = qw(t/00-use.t t/01-basic.t t/02-write.t t/03-error.t);
 
-if ($^O !~ /mswin/) {
+if ($^O !~ /mswin32/i) {
     push @tests, 't/04-posix-write.t';
 }
 
@@ -17,7 +17,7 @@ push @tests, 't/91-pod.t' unless ($@);
 eval { require Test::Pod::Coverage; };
 push @tests, 't/92-pod.t' unless ($@);
 
-if ($^O !~ /linux/) {
+if ($^O !~ /linux/i) {
     print <<"WARNING";
 
 ################################################

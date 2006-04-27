@@ -1,4 +1,4 @@
-#	$Id: Trivial.pm,v 1.10 2006-02-27 20:49:46 adam Exp $
+#	$Id: Trivial.pm,v 1.11 2006-04-27 10:31:03 adam Exp $
 
 package Log::Trivial;
 
@@ -8,7 +8,7 @@ use warnings;
 use Fcntl qw(:DEFAULT :flock :seek);
 use Carp;
 
-our $VERSION = '0.10';
+our $VERSION = '0.20';
 
 #
 #	NEW
@@ -25,6 +25,7 @@ sub new {
         _error_message => q{},                      # Store error messages here
         _debug         => undef,                    # debug flag
         _o_sync        => 1,                        # Use POSIX O_SYNC for writing, 1=on (default), 0=off
+        _log_tag       => $args{log_tag} || q{},    # Variable to tag this instance in the log file
         },
         ref $class || $class;
 
@@ -96,7 +97,12 @@ sub write {
     return $self->_raise_error('Nothing message sent to log')
         unless $message;
 
-    $message = localtime() . "\t" . $message;
+    if ($self->{_log_tag}) {
+        $message = localtime() . "\t" . $self->{_log_tag} . "\t" . $message;
+    }
+    else {
+        $message = localtime() . "\t" . $message;
+    }
     my $file = $self->{_file};
     return $self->_raise_error('No Log file specified yet') unless $file;
 
@@ -107,17 +113,14 @@ sub write {
 
     if ( $self->{_mode} ) {
         my $log = $self->_open_log_file($file);
-
         $self->_write_log( $log, $message );
         close $log;
     }
     else {
-        my $log;
         if ( !$self->{_handle} ) {
-            $log = $self->_open_log_file($file);
-            $self->{_handle} = $log;
+            $self->{_handle} = $self->_open_log_file($file);
         }
-        $self->_write_log( $log, $message );
+        $self->_write_log( $self->{_handle}, $message );
     }
     return $message;
 }
@@ -212,8 +215,15 @@ parameters.
 or
 
   $logger = Log::Trivial->new(
-    log_file => "/my/config/file",
-    log_level=> "2");
+    log_file  => "/my/config/file",
+    log_tag   => $$,
+    log_level => "2");
+
+The log_tag is an optional string that is written to every log event
+between the date at the comment, and is intended to help separate logging
+events in environments when multiple applictions are simultaneously
+writing to the same log file. For example you could pass the PID of
+the applications, as shown in the example above.
 
 =head2 set_log_file
 
@@ -299,6 +309,11 @@ with the get_error method. Only the most recent error is stored.
 The log file format is very simple and fixed:
 
 Time & date [tab] Your log comment [carriage return new line]
+
+If you have enabled a log_tag then the log format will have an extra
+element inserted in it.
+
+Time & date [tab] log_tag [tab] Your log comment [carriage return new line]
 
 =head2 Prerequisites
 

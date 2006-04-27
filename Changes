@@ -1,22 +1,28 @@
-$Id: Changes,v 1.9 2006-02-27 20:49:39 adam Exp $
+$Id: Changes,v 1.10 2006-04-27 10:30:44 adam Exp $
 
 Revision history for Perl extension Log::Trivial
 
+0.20    27 April 2006
+    -   Fix to single threaded write mode (thanks to Heikki Pora)
+    -   Fix to Build process (thanks to Corion)
+    -   Add log_tag option
+    -   More tests
+
 0.10    27 February 2006
-	-   Washed code through perltidy using PBP settings
+    -   Washed code through perltidy using PBP settings
     -   Now using PBP guidelines
     -   Improved test coverage
     -   May work on non POSIX platforms
 
-0.03	20 October 2005
-	-	Supports Module::Build as well as make
-	-	Extra tests
+0.03    20 October 2005
+    -   Supports Module::Build as well as make
+    -   Extra tests
 
-0.02	17 October 2005
-	-	Added t/92-pod.t
-	-	Documentation fixes
-	-	Minor API additions
-	-	Extra tests
+0.02    17 October 2005
+    -   Added t/92-pod.t
+    -   Documentation fixes
+    -   Minor API additions
+    -   Extra tests
 
-0.01	14 October 2005
-	-	Very basic OO file logging tool
+0.01    14 October 2005
+    -	Very basic OO file logging tool

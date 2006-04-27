@@ -1,6 +1,6 @@
 ---
 name: Log-Trivial
-version: 0.10
+version: 0.20
 author:
   - 'Adam Trickett, E<lt>atrickett@cpan.orgE<gt>'
 abstract: Very simple tool for writing very simple log files
@@ -10,5 +10,5 @@ requires:
 provides:
   Log::Trivial:
     file: lib/Log/Trivial.pm
-    version: 0.10
-generated_by: Module::Build version 0.26
+    version: 0.20
+generated_by: hand

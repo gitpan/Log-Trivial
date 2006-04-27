@@ -1,19 +1,19 @@
-$Id: README,v 1.7 2006-02-27 20:49:39 adam Exp $
+$Id: README,v 1.8 2006-04-27 10:30:44 adam Exp $
 
-Log::Trivial Version 0.10
+Log::Trivial Version 0.20
 =========================
 
 This is "Yet Another" simple module to write trivial
 log files. At the moment please treat this code as
-ALPHA grade only.
+BETA grade only.
 
 There are LOTS of other log writing modules on CPAN,
 please check them all carefully before installing
 this one.
 
 WARNING: This module needs a POSIX like operating
-system for full function, which means it probably
-will not run on Windows, though it has been
+system for full function, which means it not every
+function is supported on Windows, though it has been
 tested on Cygwin/Win2K.
 
 INSTALLATION
