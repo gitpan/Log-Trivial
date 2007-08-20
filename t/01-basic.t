@@ -1,16 +1,14 @@
-#	$Id: 01-basic.t,v 1.6 2006-04-27 10:31:13 adam Exp $
+#    $Id: 01-basic.t,v 1.9 2007-08-18 20:28:15 adam Exp $
 
 use strict;
-use Test;
-BEGIN { plan tests => 4 }
+use Test::More tests => 4;
 
-use Log::Trivial;
+BEGIN { use_ok( 'Log::Trivial' ); }
 
-ok(1);
-ok($Log::Trivial::VERSION, '0.20');
+is( $Log::Trivial::VERSION, '0.30', 'Version Check' );
 
 my $logger = Log::Trivial->new;
-ok(defined $logger);
-ok($logger->isa('Log::Trivial'));
+ok( defined $logger, 'Object is defined' );
+isa_ok( $logger, 'Log::Trivial',  'Oject/Class Check' );
 
 exit;

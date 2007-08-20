@@ -1,4 +1,4 @@
-#	$Id: Trivial.pm,v 1.11 2006-04-27 10:31:03 adam Exp $
+#    $Id: Trivial.pm,v 1.15 2007-08-20 15:43:40 adam Exp $
 
 package Log::Trivial;
 
@@ -8,26 +8,26 @@ use warnings;
 use Fcntl qw(:DEFAULT :flock :seek);
 use Carp;
 
-our $VERSION = '0.20';
+our $VERSION = '0.30';
 
 #
-#	NEW
+#    NEW
 #
 
 sub new {
     my $class  = shift;
     my %args   = @_;
     my $object = bless {
-        _file   => $args{log_file} || q{},          # The Log File
-        _mode   => 1,                               # Set the file logging mode 1=multi thread, 0=single
-        _handle => undef,                           # File Handle if in single mode
-        _level         => $args{log_level} || '3',  # Logging level
-        _error_message => q{},                      # Store error messages here
-        _debug         => undef,                    # debug flag
-        _o_sync        => 1,                        # Use POSIX O_SYNC for writing, 1=on (default), 0=off
-        _log_tag       => $args{log_tag} || q{},    # Variable to tag this instance in the log file
-        },
-        ref $class || $class;
+        _file => $args{log_file} || q{},           # The Log File
+        _mode   => 1,     # File logging mode 1=multi thread, 0=single
+        _handle => undef, # File Handle if in single mode
+        _level         => $args{log_level} || '3', # Logging level
+        _error_message => q{},                     # Store error messages here
+        _debug         => undef,                   # debug flag
+        _o_sync => 1,    # Use POSIX O_SYNC for writing, 1=on (default), 0=off
+        _log_tag => $args{log_tag}
+            || q{},      # Variable to tag this instance in the log file
+    }, $class;
 
     return $object;
 }
@@ -71,8 +71,8 @@ sub set_log_level {
 sub set_write_mode {
     my $self = shift;
     my $mode = shift;
-    
-   if ( $mode =~ /s/imx ) {
+
+    if ( $mode =~ /s/imx ) {
         $self->{_o_sync} = 1;
     }
     else {
@@ -85,7 +85,7 @@ sub write {
     my $self = shift;
     my $message;
     if ( @_ > 1 ) {
-        my %args = @_;
+        my %args  = @_;
         my $level = $args{level};
         return if $level && $self->{_level} < $level;
         $message = $args{comment} || q{.};
@@ -97,7 +97,7 @@ sub write {
     return $self->_raise_error('Nothing message sent to log')
         unless $message;
 
-    if ($self->{_log_tag}) {
+    if ( $self->{_log_tag} ) {
         $message = localtime() . "\t" . $self->{_log_tag} . "\t" . $message;
     }
     else {
@@ -106,7 +106,7 @@ sub write {
     my $file = $self->{_file};
     return $self->_raise_error('No Log file specified yet') unless $file;
 
-    if ( -e $file && ! -w _ ) {
+    if ( -e $file && !-w _ ) {
         return $self->_raise_error(
             "Insufficient permissions to write to: $file");
     }
@@ -131,7 +131,7 @@ sub get_error {
 }
 
 #
-#	Private Stuff
+#    Private Stuff
 #
 
 sub _check_file {
@@ -153,7 +153,7 @@ sub _open_log_file {
     }
     else {
         sysopen $log, $file, O_WRONLY | O_CREAT | O_APPEND
-            or return $self->_raise_error("Unable to open Log File: $file");   
+            or return $self->_raise_error("Unable to open Log File: $file");
     }
     flock $log, LOCK_EX;
     return $log;
@@ -175,14 +175,12 @@ sub _write_log {
 sub _raise_error {
     my $self    = shift;
     my $message = shift;
-    carp $message if $self->{_debug};       # DEBUG:  warn with the message
-    $self->{_error_message} = $message;     # NORMAL: set the message
+    carp $message if $self->{_debug};    # DEBUG:  warn with the message
+    $self->{_error_message} = $message;  # NORMAL: set the message
     return;
 }
 
-
 1;
-
 
 __END__
 
@@ -196,14 +194,14 @@ Log::Trivial - Very simple tool for writing very simple log files
   use Log::Trivial;
   my $logger = Log::Trivial->new(log_file => "path/to/my/file.log");
   $logger->set_level(3);
-  $logger->log(comment => "foo");
+  $logger->write(comment => "foo");
 
 =head1 DESCRIPTION
 
 Use this module when you want use "Yet Another" very simple, light
 weight log file writer.
 
-=head1 METHODS
+=head1 SUBROUTINES/METHODS
 
 =head2 new
 
@@ -245,11 +243,11 @@ can should be writing to the log at any given point in time.
 
 WARNING: Not all system honour flock.
 
-  $logger->set_log_mode("multi");	# Sets multi mode (the default)
+  $logger->set_log_mode("multi");    # Sets multi mode (the default)
 
 or
 
-  $logger->set_log_mode("single");	# Sets single mode
+  $logger->set_log_mode("single");    # Sets single mode
 
 =head2 set_log_level
 
@@ -315,7 +313,7 @@ element inserted in it.
 
 Time & date [tab] log_tag [tab] Your log comment [carriage return new line]
 
-=head2 Prerequisites
+=head2 DEPENDENCIES
 
 At the moment the module only uses core modules. The test suite optionally uses
 C<Pod::Coverage>, C<Test::Pod::Coverage> and C<Test::Pod>, which will be skipped
@@ -325,7 +323,7 @@ if you don't have them.
 
 See Changes file.
 
-=head2 Defects and Limitations
+=head1 BUGS AND LIMITATIONS
 
 By default log write are POSIX synchronous, it is very unlikely that it will run
 on any OS that does not support POSIX synchronous file writing, this means it
@@ -360,25 +358,24 @@ Adam Trickett, E<lt>atrickett@cpan.orgE<gt>
 
 L<perl>, L<Log::Agent>, L<Log::Log4perl>, L<Log::Dispatch>, L<Log::Simple>
 
-=head1 COPYRIGHT
+=head1 LICENSE AND COPYRIGHT
 
-C<Log::Trivial>, Copyright iredale consulting 2006
+C<Log::Trivial>, Copyright iredale consulting 2006-2007
 
 OSI Certified Open Source Software.
+Free Software Foundation Free Software.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published
-by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston,
-MA 02111, USA.
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

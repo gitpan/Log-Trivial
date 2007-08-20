@@ -1,6 +1,6 @@
-$Id: README,v 1.8 2006-04-27 10:30:44 adam Exp $
+$Id: README,v 1.9 2007-08-06 21:49:41 adam Exp $
 
-Log::Trivial Version 0.20
+Log::Trivial Version 0.30
 =========================
 
 This is "Yet Another" simple module to write trivial

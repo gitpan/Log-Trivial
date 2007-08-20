@@ -1,31 +1,25 @@
-# $Id: Makefile.PL,v 1.5 2006-02-27 20:49:39 adam Exp $
+# $Id: Makefile.PL,v 1.8 2007-08-20 15:43:36 adam Exp $
 
 use ExtUtils::MakeMaker;
 use strict;
 use 5.006;
 
-my @tests;
-my $test_list = 't/00-use.t t/01-basic.t t/02-write.t t/03-error.t';
+if ($^O !~ /linux/i) {
+    print <<"WARNING";
 
-$test_list .= ' t/04-posix-write.t' unless $^O =~ /mswin/;
+################################################
+# This module uses the POSIX open O_SYNC flag. #
+# This flag is not supported on all systems.   #
+################################################
 
-eval { require Test::Pod; };
-$test_list .= ' t/90-pod.t' unless ($@);
-
-eval { require Pod::Coverage; };
-$test_list .= ' t/91-pod.t' unless ($@);
-
-eval { require Test::Pod::Coverage; };
-$test_list .= ' t/92-pod.t' unless ($@);
-
-push @tests, test => { TESTS => $test_list};
+WARNING
+}
 
 WriteMakefile(
     'NAME'          => 'Log::Trivial',
     'VERSION_FROM'  => 'lib/Log/Trivial.pm',
-    'PREREQ_PM'     => {}, 
-	'PL_FILES'      => {},
-	@tests,
+    'PREREQ_PM'     => {},
+    'PL_FILES'      => {},
      dist           => {
        COMPRESS      => 'gzip -9f',
        SUFFIX        => 'gz'

@@ -1,6 +1,15 @@
-$Id: Changes,v 1.10 2006-04-27 10:30:44 adam Exp $
+$Id: Changes,v 1.15 2007-08-20 15:44:38 adam Exp $
 
 Revision history for Perl extension Log::Trivial
+
+0.30    20 August 2007
+    -   Added crypto signature
+    -   Tested with Perl 5.6.2 and 5.8.8
+    -   More tests - Thanks to Perl Testing: A Developer's Notebook
+    -   More PBP strictness code tweak
+    -   Documentation fix (thanks to romanzzz)
+    -   Now uses GNU GPL Version 3.0 and later
+    -   Example file
 
 0.20    27 April 2006
     -   Fix to single threaded write mode (thanks to Heikki Pora)
@@ -25,4 +34,4 @@ Revision history for Perl extension Log::Trivial
     -   Extra tests
 
 0.01    14 October 2005
-    -	Very basic OO file logging tool
+    -    Very basic OO file logging tool

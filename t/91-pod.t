@@ -1,10 +1,18 @@
-#	$Id: 91-pod.t,v 1.1.1.1 2005/10/14 15:31:05 adam Exp $
+#    $Id: 91-pod.t,v 1.2 2007-08-06 21:49:56 adam Exp $
 
 use strict;
-use Test;
-use Pod::Coverage;
+use Test::More;
 
-plan tests => 1;
+BEGIN {
+    eval ' use Pod::Coverage; ';
+
+    if ($@) {
+        plan( skip_all => 'Pod::Coverage not installled.' );
+    }
+    else {
+        plan( tests => 1 );
+    }
+}
 
 my $pc = Pod::Coverage->new(package => 'Log::Trivial');
 ok($pc->coverage == 1);

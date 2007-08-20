@@ -1,10 +1,7 @@
-#	$Id: 00-use.t,v 1.1.1.1 2005/10/14 15:31:05 adam Exp $
+#    $Id: 00-use.t,v 1.3 2007-08-20 15:43:40 adam Exp $
 
 use strict;
-use Test;
-BEGIN { plan tests => 1 }
-
+use Test::More tests => 1;
 use Log::Trivial;
-ok(1);
-exit;
-__END__
+
+BEGIN { use_ok( 'Log::Trivial' ); };
