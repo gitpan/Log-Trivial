@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: Log-Trivial
-version: 0.30
+version: 0.31
 author:
   - 'Adam Trickett, E<lt>atrickett@cpan.orgE<gt>'
 abstract: Very simple tool for writing very simple log files
@@ -11,7 +11,7 @@ requires:
 provides:
   Log::Trivial:
     file: lib/Log/Trivial.pm
-    version: 0.30
+    version: 0.31
 build_requires:
   Test::More: 0
 meta-spec:

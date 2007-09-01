@@ -1,7 +1,7 @@
-#    $Id: 02-write.t,v 1.6 2007-08-19 19:15:55 adam Exp $
+#    $Id: 02-write.t,v 1.7 2007-09-01 17:39:36 adam Exp $
 
 use strict;
-use Test::More tests => 41;
+use Test::More tests => 43;
 
 use Log::Trivial;
 
@@ -67,6 +67,8 @@ $logger = Log::Trivial->new(
     log_file => $logfile
 );
 ok( $logger,                              'We have a $logger object' );
+ok( $logger->set_write_mode('a'),              'Set write mode to a' );
+is( $logger->{_o_sync}, 0,                        'Is o_sync unset?' );
 ok( $logger->write('tagged entry'),                    'Write okay?' );
 
 SKIP:

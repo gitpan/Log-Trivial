@@ -1,4 +1,4 @@
-#    $Id: Trivial.pm,v 1.15 2007-08-20 15:43:40 adam Exp $
+#    $Id: Trivial.pm,v 1.17 2007-09-01 17:43:00 adam Exp $
 
 package Log::Trivial;
 
@@ -8,7 +8,7 @@ use warnings;
 use Fcntl qw(:DEFAULT :flock :seek);
 use Carp;
 
-our $VERSION = '0.30';
+our $VERSION = '0.31';
 
 #
 #    NEW
@@ -342,7 +342,7 @@ Much better test suite.
 
 =item *
 
-See if it's possible to work on non-POSIX like systems
+See if it's possible to work on non-POSIX like systems automatically
 
 =back
 
@@ -360,7 +360,7 @@ L<perl>, L<Log::Agent>, L<Log::Log4perl>, L<Log::Dispatch>, L<Log::Simple>
 
 =head1 LICENSE AND COPYRIGHT
 
-C<Log::Trivial>, Copyright iredale consulting 2006-2007
+C<Log::Trivial>, Copyright iredale consulting 2005-2007
 
 OSI Certified Open Source Software.
 Free Software Foundation Free Software.
