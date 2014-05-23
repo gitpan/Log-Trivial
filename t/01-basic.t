@@ -5,7 +5,7 @@ use Test::More tests => 4;
 
 BEGIN { use_ok( 'Log::Trivial' ); }
 
-is( $Log::Trivial::VERSION, '0.31', 'Version Check' );
+is( $Log::Trivial::VERSION, '0.40', 'Version Check' );
 
 my $logger = Log::Trivial->new;
 ok( defined $logger, 'Object is defined' );

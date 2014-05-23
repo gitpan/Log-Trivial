@@ -2,10 +2,18 @@
 
 use Test::More;
 
+use Test::More;
+use strict;
+
 BEGIN {
+
+    if ( $ENV{SKIP_SIGNATURE_TEST} ) {
+        plan( skip_all => 'Signature test skipped. Unset $ENV{SKIP_SIGNATURE_TEST} to activate test.' );
+    }
+
     eval ' use Test::Signature; ';
 
-    if ($@) {
+    if ( $@ ) {
         plan( skip_all => 'Test::Signature not installed.' );
     }
     else {

@@ -1,6 +1,6 @@
-$Id: README,v 1.10 2007-09-01 17:38:34 adam Exp $
+$Id: README 63 2014-05-23 11:10:07Z adam $
 
-Log::Trivial Version 0.31
+Log::Trivial Version 0.40
 =========================
 
 This is "Yet Another" simple module to write trivial
@@ -34,9 +34,12 @@ or
 DEPENDENCIES
 
 This module requires only core modules:
-    Perl 5.6.x
+    Perl 5.10.x
     strict
     warnings
+
+It will probably work on older perls but I do not have them to test
+with anymore.
 
 The tests will use non-core modules if available
 but these are not required for normal use.

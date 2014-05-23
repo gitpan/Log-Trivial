@@ -1,13 +1,17 @@
-# $Id: Makefile.PL,v 1.8 2007-08-20 15:43:36 adam Exp $
+# $Id: Makefile.PL 61 2014-05-23 11:04:17Z adam $
 
 use ExtUtils::MakeMaker;
 use strict;
-use 5.006;
+use 5.010;
 
 if ($^O !~ /linux/i) {
     print <<"WARNING";
 
 ################################################
+# The module has not been fully tested on old  #
+# versions of Perl, it may or may not work.    #
+# User beware!                                 #
+#                                              #
 # This module uses the POSIX open O_SYNC flag. #
 # This flag is not supported on all systems.   #
 ################################################

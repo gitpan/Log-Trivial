@@ -1,6 +1,14 @@
-$Id: Changes,v 1.17 2007-09-01 17:42:49 adam Exp $
+$Id: Changes 61 2014-05-23 11:04:17Z adam $
 
 Revision history for Perl extension Log::Trivial
+
+0.40    23 May 2014
+    -   Add option to supresss date in log is requested (thanks to Peter Vypov)
+    -   Fixed suppressed file open errors (RT Bug No. 55098)
+    -   Tested against later Perls, NOT tested againts older Perls
+    -   Using SVN not CVS
+    -   Added Lesser GPL3 LICENCE
+    -   New GPG Signature: 9CDA8911AF0DB
 
 0.31    01 September 2007
     -   Bug fix to test 02-write.t only, no module changes made

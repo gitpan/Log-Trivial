@@ -1,10 +1,14 @@
-MANIFEST
-Changes
-Makefile.PL
 Build.PL
+Changes
+examples/example-01.pl
+lib/Log/Trivial.pm
+LICENCE
+Makefile.PL
+MANIFEST
+META.json
+META.yml
 README
 SIGNATURE
-lib/Log/Trivial.pm
 t/00-signature.t
 t/00-use.t
 t/01-basic.t
@@ -19,5 +23,3 @@ t/80-distribution.t
 t/90-pod.t
 t/91-pod.t
 t/92-pod.t
-examples/example-01.pl
-META.yml
